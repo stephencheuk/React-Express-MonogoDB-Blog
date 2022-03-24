@@ -1,0 +1,30 @@
+{
+  "name": "react-express-monogodb-blog",
+  "version": "0.0.1",
+  "description": "description",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stephencheuk/React-Express-MonogoDB-Blog.git"
+  },
+  "keywords": [
+    "react",
+    "express",
+    "mongodb",
+    "curd",
+    "blog"
+  ],
+  "author": "stephencheuk",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/stephencheuk/React-Express-MonogoDB-Blog/issues"
+  },
+  "homepage": "https://github.com/stephencheuk/React-Express-MonogoDB-Blog#readme",
+  "dependencies": {
+    "express": "^4.17.3"
+  }
+}
