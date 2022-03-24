@@ -1,0 +1,107 @@
+
+.customLook{
+    --tag-bg                  : #f4f4f5;
+    --tag-hover               : #fef9c3;
+    --tag-text-color          : #44403c;
+    --tag-text-size           : 0.9rem;
+    --tags-border-color       : silver;
+    --tag-text-color--edit    : #fff;
+    --tag-remove-bg           : var(--tag-hover);
+    --tag-pad                 : .6em 1em;
+    --tag-inset-shadow-size   : 1.35em;
+    --tag-remove-btn-bg--hover: black;
+    --tag-invalid-color       : red;
+  
+    display: inline-block;
+    min-width: 0;
+    border: none;
+}
+
+.customLook .tagify__tag{
+  margin-top: 0;
+  cursor: pointer;
+}
+
+.customLook .tagify__tag > div{
+  border-radius: 6px;
+  padding: 3px 12px 3px 7px;
+}
+.customLook .tagify__tag-text{
+  font-size: var(--tag-text-size);
+  background-color: transparent;
+}
+
+/* Do not show the "remove tag" (x) button when only a single tag remains */
+.customLook .tagify__tag:only-of-type .tagify__tag__removeBtn{
+  display: none;
+}
+
+.customLook .tagify__tag__removeBtn:after {
+  content: "✕";
+}
+
+.tagify__tag__removeBtn:hover + div > span {
+    opacity: 1;
+  text-decoration: line-through;
+  text-decoration-thickness: 3px;
+  text-decoration-color: rgb(255,0,0,0.4);
+}
+
+
+.tagify__tag__removeBtn:hover {
+  color: inherit;
+  background-color: transparent;
+}
+
+.tagify__tag__removeBtn:after:hover {
+  font-weight: 500;
+}
+
+.customLook .tagify__tag__removeBtn{
+  opacity: 0;
+  transform: translateX(-6px) scale(.5);
+  margin-left: -3ch;
+  transition: .12s;
+}
+
+.tagify__tag--editable > div{
+  background-color: #fef9c3;
+  color: #44403c;
+}
+
+.customLook:not(.tagify--focus) .tagify__tag:hover .tagify__tag__removeBtn{
+  transform: none;
+  opacity: 1;
+  margin-left: -1ch;
+}
+
+.customLook + button{
+  color: #0052BF;
+  font: bold 1.4em/1.65 Arial;
+  border: 0;
+  background: none;
+  box-shadow: 0 0 0 2px inset currentColor;
+  border-radius: 50%;
+  width: 1.65em;
+  height: 1.65em;
+  cursor: pointer;
+  outline: none;
+  transition: .1s ease-out;
+  margin: 0 0 0 5px;
+  vertical-align: top;
+}
+
+.customLook + button:hover{
+  box-shadow: 0 0 0 5px inset currentColor;
+}
+
+.customLook .tagify__input{
+  display: none;
+}
+
+.customLook .AddTagBtn{
+  margin-bottom: '5px';
+  background-color: 'transparent';
+  border: 'none';
+  cursor: 'pointer';
+}
