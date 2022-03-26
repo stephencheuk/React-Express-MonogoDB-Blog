@@ -98,21 +98,45 @@ router.put("/update/:id", async (req, res) => {
 })
 
 router.get("/list", async (req, res) => {
-  console.log(req.query.tag)
+  console.log(req.query)
   if (trips) {
-    let search = {};
-    if (req?.query?.tag) search['tags.value'] = req.query.tag;
-    console.log(search);
 
-    trips.find(search).toArray((err, items) => {
+    let query = {};
+    if (req?.query?.tag) query["tags.value"] = req.query.tag;
+    if (req?.query?.search) {
+      query["$or"] = [];
+      query["$or"].push({ "title": eval(`/${req.query.search}/i`) });
+      query["$or"].push({ "description.blocks.data.text": eval(`/${req.query.search}/i`) });
+    }
+
+    let limit = 10;
+    let shift = 0;
+    let page = req?.query?.page || 1;
+    if (page) {
+      shift = (parseInt(req.query.page) - 1) * limit
+    }
+
+    let out = trips.find(query).count();
+
+    let response = {
+      range: limit,
+      total: await out,
+      page,
+    };
+
+    response.totalPage = Math.ceil(response.total / limit);
+
+    trips.find(query).sort({ updatedAt: -1 }).limit(limit).skip(shift).toArray((err, items) => {
       if (err) {
         console.error(err)
         res.status(500).json({ err: err })
         return
       }
       console.error(JSON.stringify(items))
-      res.status(200).json({ "data": items })
-    })
+      response.data = items;
+      res.status(200).json(response)
+    });
+
   } else {
     console.error("Database not ready")
     res.status(500).json({ err: "Database not ready" })
@@ -121,7 +145,10 @@ router.get("/list", async (req, res) => {
 
 router.get("/post/:id", async (req, res) => {
 
-  if (trips && req.params.id && ObjectId.isValid(req.params.id)) {
+  if (!req.params.id) return res.status(200).json({ err: "missing post id" });
+  if (!ObjectId.isValid(req.params.id)) return res.status(200).json({ err: "post id does not valid" });
+
+  if (trips) {
     trips.findOne({ _id: ObjectId(req.params.id) }, (err, item) => {
       if (err) {
         console.error(err)

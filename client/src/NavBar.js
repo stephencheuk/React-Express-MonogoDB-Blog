@@ -7,19 +7,20 @@ const NavBar = () => {
 
   const [tags, setTags] = useState([]);
 
-  useEffect(async () => {
-    try {
-      const res = await axios.get("/api/mydata/tags");
-      console.log(res.data);
-      setTags(res.data.tags);
-    } catch (err) {
-      console.log(err);
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const res = await axios.get("/api/mydata/tags");
+        setTags(res.data.tags);
+      } catch (err) {
+        console.log(err);
+      }
     }
-
+    fetchData();
   }, []);
 
   return (
-    <div className='hidden flex-[2] lg:block'>
+    <div className='flex-[2]'>
       {/*<NavBlock name="Category" />*/}
       <NavBlock name="Tags" data={tags} />
     </div>

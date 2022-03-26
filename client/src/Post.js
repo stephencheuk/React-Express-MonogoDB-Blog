@@ -1,24 +1,24 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
+import Pagination from './Pagination';
 
 const Post = ({ data, ...props }) => {
 
-  // {
-  //   cat: '思維',
-  //   title: '人生24堂',
-  //   desc: '',
-  //   author: 'stephen',
-  //   createdAt: '2022-03-18 00:01:10',
-  //   img: 'https://1.bp.blogspot.com/-ao-g06bkbZk/XWZAVpMHs1I/AAAAAAAABYs/IPpjTILdxIUg16s2h77SBtfjIAjU2GldgCLcBGAs/s1600/photo-1522008660239-1bbdb39444c4.jpg',
-  //   tags: ['思維', '人生'],
-  // }
+  let [searchParams, setSearchParams] = useSearchParams();
+
+  const setCurrentPage = (page) => {
+    let qx = Object.fromEntries([...searchParams]);
+    let qq = { page };
+    if (qx.tag) { qq.tag = qx.tag }
+    if (qx.search) { qq.search = qx.search }
+    setSearchParams(qq)
+  };
 
   return (
     <div>
       {
-        data.map((d) => {
+        data?.data?.map((d) => {
           return (
-            <div key={d.title} className='flex mx-2 py-6 border-b border-[#e6e6e6]'>
+            <div key={d.title} className='flex mx-2 py-6 border-b border-neutral-300'>
               <Link to={`/posts/${d._id}`}>
                 <div className='flex-1 h-[256px] w-[380px] overflow-hidden place-content-center flex'>
                   {d.image ? <img className="max-w-fit" alt="" src={d.image} /> : null}
@@ -46,7 +46,16 @@ const Post = ({ data, ...props }) => {
           )
         })
       }
-    </div >
+      <div className='m-2 flex justify-center'>
+        <Pagination
+          className="pagination-bar"
+          currentPage={parseInt(data?.page || 1)}
+          totalCount={parseInt(data?.total || 0)}
+          pageSize={parseInt(data?.range || 1)}
+          onPageChange={page => setCurrentPage(page)}
+        />
+      </div>
+    </div>
   )
 }
 

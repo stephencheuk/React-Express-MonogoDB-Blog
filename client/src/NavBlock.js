@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 
 const NavBlock = ({ name, data, ...props }) => {
   return (
-    <div className='navbar border border-[#e6e6e6] rounded-lg m-2 p-2 bg-white'>
+    <div className='navbar border border-neutral-300 rounded-lg m-2 p-2 bg-white'>
       {name}
       <hr className='border-[#ff3d00]' />
       <div className='flex'>

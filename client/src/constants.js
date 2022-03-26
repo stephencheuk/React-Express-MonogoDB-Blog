@@ -38,5 +38,5 @@ export const EDITOR_JS_TOOLS = {
   delimiter: Delimiter,
   inlineCode: InlineCode,
   simpleImage: SimpleImage,
-  // react: ReactTool,
+  react: ReactTool,
 }
