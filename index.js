@@ -6,6 +6,7 @@ const multer = require("multer");
 const path = require("path");
 const dataRoute = require("./routes_curd");
 const fileRoute = require("./routes_upload.js");
+const expressStaticGzip = require("express-static-gzip");
 
 const app = express()
 app.use(express.json());
@@ -38,10 +39,13 @@ app.use("/api/images", fileRoute);
 
 app.use("/images", express.static(path.join(__dirname, "/images")));
 
-app.use(express.static(path.join(__dirname, "/client/build")));
+// app.use(express.static(path.join(__dirname, "/client/build")));
+app.use("/", expressStaticGzip(path.join(__dirname, "/client/build"), {
+  enableBrotli: true
+}));
 
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '/client/build', 'index.html'));
-});
+// app.get('*', (req, res) => {
+//   res.sendFile(path.join(__dirname, '/client/build', 'index.html'));
+// });
 
 app.listen(process.env.PORT || 5000, () => console.log("Server ready and Listen on " + (process.env.PORT || 5000)))
