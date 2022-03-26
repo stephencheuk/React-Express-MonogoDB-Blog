@@ -9,7 +9,6 @@ import TagField from './tagify/tagify';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 
 const Button = ({ type, onClick, ...props }) => {
   return <button type={type} className='m-2 py-2 px-4 border bg-neutral-100 border-neutral-300 rounded' onClick={onClick}>{props.children}</button>

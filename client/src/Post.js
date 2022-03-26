@@ -1,5 +1,6 @@
 import { Link, useSearchParams } from 'react-router-dom'
 import Pagination from './Pagination';
+import PostLoader from './PostLoader';
 
 const Post = ({ data, ...props }) => {
 
@@ -15,6 +16,13 @@ const Post = ({ data, ...props }) => {
 
   return (
     <div>
+      {
+        data.data ? null : (
+          <div className='flex mx-2 py-6 border-b border-neutral-300'>
+            <PostLoader />
+          </div>
+        )
+      }
       {
         data?.data?.map((d) => {
           return (
@@ -55,7 +63,7 @@ const Post = ({ data, ...props }) => {
           onPageChange={page => setCurrentPage(page)}
         />
       </div>
-    </div>
+    </div >
   )
 }
 

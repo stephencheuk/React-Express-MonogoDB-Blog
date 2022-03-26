@@ -25,6 +25,7 @@ const PostsList = () => {
   }
 
   useEffect(() => {
+    setPosts({});
     GetData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams])
