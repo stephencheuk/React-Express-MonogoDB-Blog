@@ -39,10 +39,10 @@ app.use("/api/images", fileRoute);
 
 app.use("/images", express.static(path.join(__dirname, "/images")));
 
-// app.use(express.static(path.join(__dirname, "/client/build")));
-app.use("/", expressStaticGzip(path.join(__dirname, "/client/build"), {
-  enableBrotli: true
-}));
+app.use(express.static(path.join(__dirname, "/client/build")));
+// app.use("/", expressStaticGzip(path.join(__dirname, "/client/build"), {
+//   enableBrotli: true
+// }));
 
 // app.get('*', (req, res) => {
 //   res.sendFile(path.join(__dirname, '/client/build', 'index.html'));
