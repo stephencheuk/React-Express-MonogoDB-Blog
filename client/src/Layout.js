@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Suspense } from 'react'
 import { Outlet } from 'react-router-dom'
 import Header from './Header'
 import NavBar from './NavBar'
@@ -9,7 +9,9 @@ const Layout = () => {
       <Header />
       <div className='w-full max-w-6xl mx-auto flex flex-col-reverse lg:flex-row'>
         <div className="border border-neutral-300 rounded-lg bg-white m-2 p-2 flex flex-col flex-[5]">
-          <Outlet />
+          <Suspense fallback={<div>Page is Loading...</div>}>
+            <Outlet />
+          </Suspense>
         </div>
         <NavBar />
       </div>

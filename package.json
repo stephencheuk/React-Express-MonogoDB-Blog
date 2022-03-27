@@ -31,7 +31,6 @@
     "cors": "^2.8.5",
     "dotenv": "^16.0.0",
     "express": "^4.17.3",
-    "express-static-gzip": "^2.1.5",
     "mongoose": "^6.2.8",
     "multer": "^1.4.4",
     "path": "^0.12.7"

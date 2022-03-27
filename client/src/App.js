@@ -9,10 +9,11 @@ import {
 
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { lazy } from 'react';
 
-import Home from './Home';
-import PostsEdit from './PostsEdit';
-import NotFound from './NotFound';
+const Home = lazy(() => import('./Home'));
+const PostsEdit = lazy(() => import('./PostsEdit'));
+const NotFound = lazy(() => import('./NotFound'));
 
 function App() {
 
