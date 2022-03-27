@@ -6,6 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js",
+    "dev_api": "nodemon index.js",
+    "dev_ui": "cd client & npm run start",
+    "dev": "concurrently --kill-others \"npm run dev_api\" \"npm run dev_ui\"",
     "build": "cd client && npm install && npm run build"
   },
   "repository": {
