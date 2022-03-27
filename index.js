@@ -6,9 +6,28 @@ const multer = require("multer");
 const path = require("path");
 const dataRoute = require("./routes_curd");
 const fileRoute = require("./routes_upload.js");
-const expressStaticGzip = require("express-static-gzip");
+const compression = require("compression");
 
-const app = express()
+const app = express();
+const shouldCompress = (req, res) => {
+  if (req.headers['x-no-compression']) {
+    // Will not compress responses, if this header is present
+    return false;
+  }
+  // Resort to standard compression
+  return compression.filter(req, res);
+};
+
+// Compress all HTTP responses
+app.use(compression({
+  // filter: Decide if the answer should be compressed or not,
+  // depending on the 'shouldCompress' function above
+  filter: shouldCompress,
+  // threshold: It is the byte threshold for the response 
+  // body size before considering compression, the default is 1 kB
+  threshold: 0
+}));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -19,30 +38,12 @@ app.use(function (req, res, next) {
   next();
 });
 
-// const storage = multer.diskStorage({
-//   destination: (req, file, cb) => {
-//     cb(null, "images");
-//   },
-//   filename: (req, file, cb) => {
-//     cb(null, req.body.name);
-//   },
-// });
-
-// const upload = multer({ storage: storage });
-// app.post("/api/upload", upload.single("file"), (req, res) => {
-//   res.status(200).json("File has been uploaded");
-// });
-
 app.use("/api/mydata", dataRoute);
-
 app.use("/api/images", fileRoute);
 
 app.use("/images", express.static(path.join(__dirname, "/images")));
 
 app.use(express.static(path.join(__dirname, "/client/build")));
-// app.use("/", expressStaticGzip(path.join(__dirname, "/client/build"), {
-//   enableBrotli: true
-// }));
 
 // app.get('*', (req, res) => {
 //   res.sendFile(path.join(__dirname, '/client/build', 'index.html'));
