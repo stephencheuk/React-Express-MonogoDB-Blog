@@ -1,30 +1,15 @@
+const getDB = require("./db");
 const router = require("express").Router();
-const mongo = require("mongodb").MongoClient
 var ObjectId = require('mongodb').ObjectId;
 
-let db, trips, expenses
-
 const url = process.env.MONGO_URL
-
-mongo.connect(
-  url,
-  {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  },
-  (err, client) => {
-    if (err) {
-      console.error(err)
-      return
-    }
-    db = client.db("blog")
-    trips = db.collection("posts")
-  }
-)
 
 router.post("/add", async (req, res) => {
   console.log('add', req.body)
   if (req.body && req.body.title) {
+    const db = await getDB();
+    const trips = await db.collection("posts");
+
     trips.insertOne({
       ...req.body,
       createdAt: new Date(),
@@ -51,6 +36,9 @@ router.delete("/del/:id", async (req, res) => {
 
     console.log({ _id: ObjectId(req.params.id) });
 
+    const db = await getDB();
+    const trips = await db.collection("posts");
+
     trips.deleteOne({ _id: ObjectId(req.params.id) }, (err, result) => {
       if (err) {
         console.error(err)
@@ -74,6 +62,9 @@ router.put("/update/:id", async (req, res) => {
     console.log({ _id: ObjectId(req.params.id) });
 
     delete req.body._id;
+
+    const db = await getDB();
+    const trips = await db.collection("posts");
 
     trips.updateOne(
       { _id: ObjectId(req.params.id) },
@@ -99,6 +90,10 @@ router.put("/update/:id", async (req, res) => {
 
 router.get("/list", async (req, res) => {
   console.log(req.query)
+
+  const db = await getDB();
+  const trips = await db.collection("posts");
+
   if (trips) {
 
     let query = {};
@@ -148,6 +143,9 @@ router.get("/post/:id", async (req, res) => {
   if (!req.params.id) return res.status(200).json({ err: "missing post id" });
   if (!ObjectId.isValid(req.params.id)) return res.status(200).json({ err: "post id does not valid" });
 
+  const db = await getDB();
+  const trips = await db.collection("posts");
+
   if (trips) {
     trips.findOne({ _id: ObjectId(req.params.id) }, (err, item) => {
       if (err) {
@@ -165,6 +163,10 @@ router.get("/post/:id", async (req, res) => {
 
 router.get("/tags", async (req, res) => {
   console.error("/tags")
+
+  const db = await getDB();
+  const trips = await db.collection("posts");
+
   if (trips) {
     const tags = trips
       .aggregate([

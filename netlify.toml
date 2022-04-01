@@ -1,0 +1,12 @@
+[build]
+  build = "cd client & npm run build"
+  functions = "netlify_functions"
+  publish = "client/build"
+
+[[redirects]]
+  from="/api/*"
+  to="/.netlify/functions/api/:splat"
+  status = 200
+
+[dev]
+  autoLaunch = false
