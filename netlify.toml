@@ -8,5 +8,10 @@
   to="/.netlify/functions/api/:splat"
   status = 200
 
+[[redirects]]
+  from = "/*"
+  to = "/"
+  status = 200
+
 [dev]
   autoLaunch = false
