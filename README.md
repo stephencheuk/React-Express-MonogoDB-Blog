@@ -1,9 +1,3 @@
-<style>
-img[alt="Netlify Status"] {
-  vertical-align: middle;
-}
-</style>
-
 # About the project
 
 This project is a simple blog application.
