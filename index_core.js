@@ -45,14 +45,15 @@ app.use("/images", express.static(path.join(__dirname, "/images")));
 
 app.use(express.static(path.join(__dirname, "/client/build")));
 
-// app.get('*', (req, res) => {
-//   res.sendFile(path.join(__dirname, '/client/build', 'index.html'));
-// });
-
 app.get(`/api/*`, (req, res) => {
     res.json({
         message: "no route for req.path"
     });
+});
+
+// set client router response
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '/client/build', 'index.html'));
 });
 
 module.exports = app;

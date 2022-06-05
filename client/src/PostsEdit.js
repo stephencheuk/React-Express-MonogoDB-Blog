@@ -26,7 +26,7 @@ const PostsEdit = () => {
   [formVal.title, setFormVal.title] = useState('No Title');
   [formVal.image, setFormVal.image] = useState('');
   [formVal.category, setFormVal.category] = useState('');
-  [formVal.description, setFormVal.description] = useState({});
+  [formVal.description, setFormVal.description] = useState("{}");
 
   const [editor, setEditor] = useState(null);
 
@@ -81,7 +81,7 @@ const PostsEdit = () => {
       autofocus: true,
       tools: EDITOR_JS_TOOLS,
       onChange: editorChange,
-      data: res?.description || {},
+      data: JSON.parse(res?.description || "{}"),
     });
     if (res) setFormData(res);
     setEditor(editorjs);
@@ -187,12 +187,10 @@ const PostsEdit = () => {
           <Button type='button' onClick={e => { editor.destroy(); navigate(-1) }}>Back</Button>
           <Button type='button' onClick={SubmitHandler}>Save</Button>
           <Button type='button' onClick={e => setFormData({})}>Reset</Button>
-          <Button type='button' onClick={e => editor.destroy()}>editor.destroy()</Button>
         </div>
         <div className='my-2'>
           <button type='reset' className='m-2 py-2 px-4 border bg-red-500 border-red-600 rounded text-white' onClick={DeleteHandler}>Delete</button>
         </div>
-        {JSON.stringify(formVal)}
       </div>
     </div>
   )
