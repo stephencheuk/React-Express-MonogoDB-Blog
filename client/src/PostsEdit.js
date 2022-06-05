@@ -14,7 +14,7 @@ const Button = ({ type, onClick, ...props }) => {
   return <button type={type} className='m-2 py-2 px-4 border bg-neutral-100 border-neutral-300 rounded' onClick={onClick}>{props.children}</button>
 }
 
-const PostsEdit = ({ ...props }) => {
+const PostsEdit = () => {
 
   let formVal = {};
   let setFormVal = {};
@@ -23,10 +23,10 @@ const PostsEdit = ({ ...props }) => {
 
   [formVal.id, setFormVal.id] = useState('');
   [formVal.tags, setFormVal.tags] = useState([]);
-  [formVal.title, setFormVal.title] = useState('');
+  [formVal.title, setFormVal.title] = useState('No Title');
   [formVal.image, setFormVal.image] = useState('');
   [formVal.category, setFormVal.category] = useState('');
-  [formVal.description, setFormVal.description] = useState('');
+  [formVal.description, setFormVal.description] = useState({});
 
   const [editor, setEditor] = useState(null);
 
@@ -58,29 +58,34 @@ const PostsEdit = ({ ...props }) => {
       },
     }).then((response) => {
       setFormVal.image(response.data.path);
-      console.log(response);
     }).catch((err) => {
       console.log(err);
     });
     coverRef.current.value = '';
   }
 
-  const GetData = async (e) => {
+  const GetData = async () => {
+    let res;
     try {
-      const res = await axios.get("/api/mydata/post/" + id);
-      console.log(res.data);
-      const editorjs = new EditorJS({
-        holder: "editorJS",
-        autofocus: true,
-        tools: EDITOR_JS_TOOLS,
-        onChange: editorChange,
-        data: JSON.parse(res?.data?.post?.description || "{}"),
-      });
-      setFormData(res.data.post);
-      setEditor(editorjs);
+      const _res = await axios.get("/api/mydata/post/" + id);
+      console.log('getdata res', _res);
+      res = _res?.data?.post;
     } catch (err) {
       console.log(err);
     }
+
+    console.log('res.description', res?.description);
+    // auto attach to element's id editorJS
+    const editorjs = new EditorJS({
+      holder: "editorJS",
+      autofocus: true,
+      tools: EDITOR_JS_TOOLS,
+      onChange: editorChange,
+      data: res?.description || {},
+    });
+    if (res) setFormData(res);
+    setEditor(editorjs);
+
   }
 
   const setFormData = (d) => {
@@ -96,13 +101,14 @@ const PostsEdit = ({ ...props }) => {
     }
   }
 
-  const DeleteHandler = async (e, _id) => {
+  const DeleteHandler = async (e) => {
     e.preventDefault();
-    _id = formVal.id;
-    delete formVal.id;
+    const id = formVal.id;
     try {
-      await axios.delete("/api/mydata/del/" + _id, {
-        id: _id
+      await axios.delete("/api/mydata/del/" + id, {
+        id: id
+      }).catch(e => {
+        console.log(e);
       });
       navigate("/posts", { replace: true });
     } catch (err) {
@@ -141,6 +147,7 @@ const PostsEdit = ({ ...props }) => {
           });
         });
       }
+      editor.destroy();
       navigate("/posts", { replace: true });
     } catch (err) {
       console.log(err);
@@ -171,19 +178,21 @@ const PostsEdit = ({ ...props }) => {
           </div>
         </div>
         <div className='ce-block__content'>
-          <input type="text" className='outline-none p-1 font-bold text-4xl w-full' value={formVal.title || 'No Title'} onChange={e => setFormVal.title(e.target.value)} />
+          <input type="text" className='outline-none p-1 font-bold text-4xl w-full' value={formVal.title} onChange={e => setFormVal.title(e.target.value)} />
         </div>
         <div id="editorJS" className="p-3"></div>
       </div>
       <div className='flex justify-between'>
         <div className='my-2'>
-          <Button type='button' onClick={e => navigate(-1)}>Back</Button>
+          <Button type='button' onClick={e => { editor.destroy(); navigate(-1) }}>Back</Button>
           <Button type='button' onClick={SubmitHandler}>Save</Button>
           <Button type='button' onClick={e => setFormData({})}>Reset</Button>
+          <Button type='button' onClick={e => editor.destroy()}>editor.destroy()</Button>
         </div>
         <div className='my-2'>
           <button type='reset' className='m-2 py-2 px-4 border bg-red-500 border-red-600 rounded text-white' onClick={DeleteHandler}>Delete</button>
         </div>
+        {JSON.stringify(formVal)}
       </div>
     </div>
   )

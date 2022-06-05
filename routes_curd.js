@@ -1,8 +1,49 @@
 const getDB = require("./db");
 const router = require("express").Router();
 var ObjectId = require('mongodb').ObjectId;
+const cloudinary = require("cloudinary").v2;
+const fs = require('fs');
+var path = require('path');
 
 const url = process.env.MONGO_URL
+
+const save2cloudinary = async ({ source, folder, filename }) => {
+
+  if (source.indexOf("res.cloudinary.com") > -1 || !fs.existsSync(source)) {
+    // already cloud path
+    return null;
+  }
+
+  // console.log('start save2cloudinary', source, folder, filename);
+
+  const upload = () => {
+    return new Promise((resolve, reject) => {
+      cloudinary.uploader.upload(
+        source,
+        {
+          folder: folder,
+          public_id: filename,
+          use_filename: filename ? false : true,
+        },
+        (error, result) => {
+          fs.unlink(source, (err) => {
+            if (err) throw err;
+            // console.log("file " + source + " is deleted")
+          })
+          // console.log('end save2cloudinary', result, error);
+          // console.log('inside loop', result, error)
+          return resolve({ result, error });
+        }
+      );
+    });
+  };
+
+  let res = await upload();
+
+  console.log('final save2cloudinary', res);
+
+  return { url: res?.result?.url, err: res?.error };
+}
 
 router.post("/add", async (req, res) => {
   console.log('add', req.body)
@@ -10,19 +51,72 @@ router.post("/add", async (req, res) => {
     const db = await getDB();
     const trips = await db.collection("posts");
 
-    trips.insertOne({
+    let result = await trips.insertOne({
       ...req.body,
       createdAt: new Date(),
       updatedAt: new Date()
-    }, (err, result) => {
-      if (err) {
-        console.error(err)
-        res.status(500).json({ err: err })
-        return
+    }).catch(err => {
+      console.log(err);
+      res.status(500).json({ err: err })
+    });
+
+    console.log('insertOne', result);
+
+    if (result?.acknowledged) {
+      console.log(['result', result?.insertedId, result?.insertedId?.toString()]);
+
+      let id = result?.insertedId?.toString();
+
+      if (id) {
+        let filename = id;
+        console.log('save2cloudinary', {
+          source: path.join(__dirname, req.body.image),
+          folder: process.env.CLOUDINARY_DIR,
+          filename: filename,
+        });
+        let upRes = await save2cloudinary(
+          {
+            source: path.join(__dirname, req.body.image),
+            folder: process.env.CLOUDINARY_DIR,
+            filename: filename,
+          }
+        );
+
+        console.log(upRes);
+
+        if (upRes?.url) {
+          filename = upRes.url;
+
+          console.log('updateOne', { _id: ObjectId(id) },
+            {
+              $set: {
+                image: filename
+              }
+            }, upRes);
+
+          await trips.updateOne(
+            { _id: ObjectId(id) },
+            {
+              $set: {
+                image: filename
+              }
+            }
+          ).catch(err => {
+            console.error(err);
+            res.status(500).json({ err: err })
+          });
+        }
+
+        res.status(200).json({ ok: true })
+
+      } else {
+        res.status(500).json({ message: "data insert into database fail (without return id)" })
       }
-      console.log(result)
-      res.status(200).json({ ok: true })
-    })
+
+    } else {
+      res.status(500).json({ message: "data insert into database fail" })
+    }
+
   } else {
     res.status(500).json({ message: "no data" })
   }
@@ -32,22 +126,35 @@ router.delete("/del/:id", async (req, res) => {
 
   console.log('delete', req?.params?.id);
 
-  if (req.params && req.params.id) {
+  let id = req?.params?.id;
 
-    console.log({ _id: ObjectId(req.params.id) });
+  if (id === 'undefined') {
+    id = null;
+  }
+  if (id) {
+
+    console.log('delete', { _id: ObjectId(id) });
 
     const db = await getDB();
     const trips = await db.collection("posts");
 
-    trips.deleteOne({ _id: ObjectId(req.params.id) }, (err, result) => {
-      if (err) {
+    let result = await trips.deleteOne({ _id: ObjectId(id) })
+      .catch(err => {
         console.error(err)
         res.status(500).json({ err: err })
-        return
-      }
-      console.log(result)
+      });
+
+    if (result?.acknowledged) {
+      result = await cloudinary.uploader.destroy(
+        process.env.CLOUDINARY_DIR + '/' + id
+      ).catch(e => {
+        console.log(e);
+      });
       res.status(200).json({ ok: true })
-    })
+    } else {
+      res.status(500).json({ err: err })
+    }
+
   } else {
     res.status(500).json({ message: "no data" })
   }
@@ -66,6 +173,18 @@ router.put("/update/:id", async (req, res) => {
     const db = await getDB();
     const trips = await db.collection("posts");
 
+    const upRes = await save2cloudinary(
+      {
+        source: path.join(__dirname, req.body.image),
+        folder: process.env.CLOUDINARY_DIR,
+        filename: req.params.id + path.extname(req.body.image)
+      }
+    );
+
+    if (upRes?.url) {
+      req.body.image = upRes.url;
+    }
+
     trips.updateOne(
       { _id: ObjectId(req.params.id) },
       {
@@ -80,7 +199,7 @@ router.put("/update/:id", async (req, res) => {
           res.status(500).json({ err: err })
           return
         }
-        console.log(result)
+        //console.log(result)
         res.status(200).json({ ok: true })
       })
   } else {
@@ -127,7 +246,7 @@ router.get("/list", async (req, res) => {
         res.status(500).json({ err: err })
         return
       }
-      console.error(JSON.stringify(items))
+      // console.error(JSON.stringify(items))
       response.data = items;
       res.status(200).json(response)
     });
