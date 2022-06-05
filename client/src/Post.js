@@ -29,8 +29,8 @@ const Post = ({ data, ...props }) => {
             <div key={d._id} className='flex mx-2 py-6 border-b border-neutral-300'>
               <Link to={`/posts/${d._id}`}>
                 <div className='flex-1 h-[256px] w-[380px] overflow-hidden place-content-center flex'>
-                  {d.image ? <img className="max-w-fit" alt="" src={d.image} /> : null}
-                  {d.img ? <img className="max-w-fit" alt="" src={d.img} /> : null}
+                  {d.image ? <img className="max-w-fit" alt="" src={d.image} loading="lazy" /> : null}
+                  {d.img ? <img className="max-w-fit" alt="" src={d.img} loading="lazy" /> : null}
                 </div>
               </Link>
               <div className='flex-1 pl-6 flex flex-col'>
