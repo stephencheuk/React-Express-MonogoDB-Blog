@@ -10,7 +10,8 @@
 /coverage
 
 # production
-/build
+# Need for vercel deploy
+# /build
 
 # misc
 .DS_Store

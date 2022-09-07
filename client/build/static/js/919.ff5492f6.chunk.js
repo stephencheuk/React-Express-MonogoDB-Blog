@@ -1,0 +1,2 @@
+"use strict";(self.webpackChunksample_curd=self.webpackChunksample_curd||[]).push([[919],{7919:function(u,e,n){n.r(e);n(2791);var c=n(184);e.default=function(){return(0,c.jsx)("div",{children:"NotFound"})}}}]);
+//# sourceMappingURL=919.ff5492f6.chunk.js.map
